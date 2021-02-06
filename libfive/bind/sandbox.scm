@@ -237,7 +237,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
           ;; Extra functions from Guile's standard libraries
           '((srfi srfi-1) fold iota)
-          '((guile) inexact->exact))
+          '((guile) inexact->exact)
+          '((guile) load))
 
     ;; Default sandbox-safe functions
     all-pure-bindings))

@@ -329,11 +329,17 @@ bool Window::onRevert(bool)
 bool Window::loadFile(QString f, bool reload)
 {
     QFile file(f);
-    if (!file.open(QIODevice::ReadOnly))
+    file.open(QIODevice::ReadOnly);
+    return loadFile(file, reload);
+}
+
+bool Window::loadFile(QFile& file, bool reload)
+{
+    if (!file.isOpen())
     {
         QMessageBox m(this);
         m.setText("Failed to open file");
-        m.setInformativeText("<code>" + f + "</code><br>does not exist");
+        m.setInformativeText("<code>" + file.fileName() + "</code><br>does not exist");
         m.addButton(QMessageBox::Ok);
         m.setIcon(QMessageBox::Critical);
         m.setWindowModality(Qt::WindowModal);
@@ -342,34 +348,29 @@ bool Window::loadFile(QString f, bool reload)
     }
     else
     {
+        QFileInfo info(file);
+        fileLastModified = info.lastModified();
         editor->setScript(file.readAll(), reload);
         editor->setModified(false);
+
         return true;
     }
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void Window::onAutoLoad(const QString&)
 {
-    if (QFile(filename).open(QIODevice::ReadOnly))
+    Q_ASSERT(!filename.isEmpty());
+    QFile file(filename);
+    if (file.open(QIODevice::ReadOnly))
     {
         if (autoreload)
         {
             Q_ASSERT(!filename.isEmpty());
-            loadFile(filename, true);
+            loadFile(file, true);
         }
-
-        // Some editors don't edit but replace the file so the watcher thinks
-        // the file was deleted and the signal is only sent once.
-        // Re-watching the file is mandatory for those cases.
-        if (QFile::exists(filename)) {
-            watcher.addPath(filename);
-        }
-    }
-    else // File was deleted. Waiting for new file
-    {
-        watcher.addPath(QFileInfo(filename).path());
     }
 }
 
@@ -377,15 +378,18 @@ void Window::onAutoLoad(const QString&)
 
 void Window::onAutoLoadPath(const QString&)
 {
-    // file was created
-    if (QFile(filename).open(QIODevice::ReadOnly))
+    Q_ASSERT(!filename.isEmpty());
+    QFile file(filename);
+    file.open(QIODevice::ReadOnly);
+    QFileInfo info(file);
+
+    // file was created and is modified
+    if (file.isOpen() and fileLastModified != info.lastModified())
     {
-        watcher.removePaths(watcher.directories());
         watcher.addPath(filename);
         if (autoreload)
         {
-            Q_ASSERT(!filename.isEmpty());
-            loadFile(filename, true);
+            loadFile(file, true);
         }
     }
 }
@@ -586,6 +590,16 @@ void Window::setFilename(const QString& f)
         setWindowFilePath(f);
     }
 
+    // change working directory (change to home if dir does not exist)
+    if (QFileInfo(filename).dir().exists())
+    {
+        QDir::setCurrent(QFileInfo(filename).dir().path());
+    }
+    else
+    {
+        QDir::setCurrent(QDir::homePath());
+    }
+
     // Store the target file as our autoreload target
     // (even though we'll only do reloading if the menu option is set)
     auto watched_files = watcher.files();
@@ -596,14 +610,13 @@ void Window::setFilename(const QString& f)
     if (!filename.startsWith(":/") && !filename.isEmpty())
     {
         watcher.addPath(filename);
+        watcher.addPath(QFileInfo(filename).path());
     }
 }
 
 QString Window::workingDirectory() const
 {
-    return (filename.startsWith(":/") || filename.isEmpty())
-        ? QDir::homePath()
-        : QFileInfo(filename).dir().absolutePath();
+    return QDir::currentPath();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

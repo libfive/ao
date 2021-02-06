@@ -19,9 +19,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma once
 
 #include <QApplication>
+#include <QDateTime>
+#include <QFile>
+#include <QFileSystemWatcher>
 #include <QMainWindow>
 #include <QMessageBox>
-#include <QFileSystemWatcher>
 
 #include "studio/args.hpp"
 
@@ -80,10 +82,12 @@ protected:
     QString workingDirectory() const;
 
     bool loadFile(QString f, bool reload=false);
+    bool loadFile(QFile& f, bool reload=false);
     bool saveFile(QString f);
 
     /*  Filename of the current file, or empty string */
     QString filename;
+    QDateTime fileLastModified;
 
     /*  File watcher to check for changes to filename */
     QFileSystemWatcher watcher;
