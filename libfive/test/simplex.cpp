@@ -761,26 +761,26 @@ TEST_CASE("Simplex meshing (gyroid performance breakdown)", "[!benchmark]")
     BENCHMARK("SimplexTree construction")
     {
         t = SimplexWorkerPool<3>::build(s, r, settings);
-    }
+    };
 
     BENCHMARK("Assigning indices")
     {
         t->assignIndices(settings);
-    }
+    };
 
     std::unique_ptr<Mesh> m;
     BENCHMARK("Mesh building")
     {
         m = Dual<3>::walk<SimplexMesher>(t, settings, s);
-    }
+    };
 
     BENCHMARK("SimplexTree deletion")
     {
         t.reset(settings);
-    }
+    };
 
     BENCHMARK("Mesh deletion")
     {
         m.reset();
-    }
+    };
 }

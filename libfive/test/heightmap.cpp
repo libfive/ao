@@ -263,7 +263,7 @@ TEST_CASE("Heightmap::render: Performance")
         Tree t = sphere(1);
         Voxels r({-1, -1, -1}, {1, 1, 1}, 500);
         auto out = render(t, r)->depth;
-    }
+    };
 
     BENCHMARK("Menger sponge")
     {
@@ -280,5 +280,5 @@ TEST_CASE("Heightmap::render: Performance")
             m(1,0)*Tree::X() + m(1,1)*Tree::Y() + m(1,2)*Tree::Z(),
             m(2,0)*Tree::X() + m(2,1)*Tree::Y() + m(2,2)*Tree::Z());
         auto heightmap = render(sponge_, r);
-    }
+    };
 }

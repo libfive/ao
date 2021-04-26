@@ -109,7 +109,7 @@ TEST_CASE("Solver::findRoot")
                     {{ax.id(), -3}, {ay.id(), 3},
                      {bx.id(), 1}, {by.id(), 0},
                      {cx.id(), 3}, {cy.id(), 2}});
-        }
+        };
 
         auto res = out.first;
         auto vals = out.second;

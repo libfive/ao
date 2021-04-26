@@ -81,8 +81,8 @@ TEST_CASE("NeighborIndex::fromPosAndFloating")
     for (int i=0; i < pow(3, 3); ++i)
     {
         NeighborIndex n(i);
-        CAPTURE(n.pos())
-        CAPTURE(n.floating())
+        CAPTURE(n.pos());
+        CAPTURE(n.floating());
         auto m = NeighborIndex::fromPosAndFloating(n.pos(), n.floating());
         REQUIRE(i == m.i);
     }

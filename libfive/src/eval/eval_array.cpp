@@ -83,6 +83,8 @@ void ArrayEvaluator::setCount(size_t count)
     #define LIBFIVE_SIMD_SIZE 8
 #elif defined EIGEN_VECTORIZE_SSE
     #define LIBFIVE_SIMD_SIZE 4
+#elif defined EIGEN_VECTORIZE_NEON
+    #define LIBFIVE_SIMD_SIZE 4
 #elif defined EIGEN_VECTORIZE
     #warning "EIGEN_VECTORIZE is set but no vectorization flag is found"
     #define LIBFIVE_SIMD_SIZE 0
