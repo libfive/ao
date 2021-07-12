@@ -7,15 +7,12 @@ APP=$EXE.app
 VERSION=`git describe --exact-match --tags || echo "($(git rev-parse --abbrev-ref HEAD))"`
 VERSION=`echo $VERSION|sed s:/:-:g`
 
-QT_DIR=$(find /usr/local/Cellar/qt -name "5.1*" -depth 1|head -n1)
-
-cd ../../..
 rm -rf build
 mkdir build
 cd build
 cmake -GNinja\
-    -DCMAKE_PREFIX_PATH=$QT_DIR \
-    -DLIBFIVE_CCACHE_BUILD=ON \
+    -DBUILD_GUILE_BINDINGS=OFF \
+    -DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5 \
     -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12  ..
 rm -rf $APP studio/$APP
 ninja clean
@@ -119,9 +116,9 @@ install_name_tool -change \
 cd ../Resources
 mkdir -p guile/scm
 mkdir -p guile/ccache
-cp -r $GUILE_SCM guile/scm/
-cp -r $GUILE_CCACHE guile/ccache/
-cp -r ../../../../libfive/bind/guile/libfive guile/scm
+# cp -r $GUILE_SCM guile/scm/
+# cp -r $GUILE_CCACHE guile/ccache/
+# cp -r ../../../../libfive/bind/guile/libfive guile/scm
 
 # In the Resources directory, find any uncompiled scm files and compile them
 # now for a faster startup, then delete them to reduce bundle size
@@ -139,15 +136,8 @@ cd ../../..
 cp ../studio/deploy/mac/Info.plist $APP/Contents/Info.plist
 sed -i "" "s:0\.0\.0:$VERSION:g" $APP/Contents/Info.plist
 
-# Build icon and deploy into bundle
-inkscape --export-filename=icon512.png ../studio/deploy/icon/icon.svg
-convert icon512.png -resize 256x256 icon256.png
-convert icon512.png -resize 128x128 icon128.png
-convert icon512.png -resize 32x32 icon32.png
-convert icon512.png -resize 16x16 icon16.png
-png2icns studio.icns icon512.png icon256.png icon128.png icon32.png icon16.png
-mv studio.icns $APP/Contents/Resources/studio.icns
-rm icon512.png icon256.png icon128.png icon32.png icon16.png
+# Copy icon into bundle
+cp ../studio/deploy/icon/studio.icns $APP/Contents/Resources/studio.icns
 
 if [ "$1" == "dmg" ]; then
     # Create the disk image

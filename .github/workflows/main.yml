@@ -1,0 +1,22 @@
+name: Build libfive and studio
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  macos-build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: brew install ninja eigen boost guile python3 qt@5
+    - name: Release build
+      run: ./studio/deploy/mac/deploy.sh dmg
+    - uses: actions/upload-artifact@v2
+      with:
+        path: Studio.dmg
