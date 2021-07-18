@@ -1,6 +1,5 @@
 set(SRCS
     libfive/__init__.py
-    libfive/ffi.py
     libfive/runner.py
     libfive/shape.py
 
@@ -9,6 +8,10 @@ set(SRCS
     libfive/stdlib/shapes.py
     libfive/stdlib/transforms.py
     libfive/stdlib/text.py
+)
+
+set(FFI
+    libfive/ffi.py
 )
 
 set(OUTS "")
@@ -24,6 +27,8 @@ foreach(SRC ${SRCS})
 endforeach(SRC)
 
 add_custom_target(libfive-python ALL DEPENDS ${OUTS})
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${FFI}  "${CMAKE_CURRENT_BINARY_DIR}/${FFI}")
 
 ################################################################################
 

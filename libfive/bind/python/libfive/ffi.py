@@ -33,6 +33,10 @@ def paths_for(folder):
     # was double-checked, which puts the build directory up one level.
     if sys.platform == 'win32':
         paths.append(os.path.join('..', 'libfive', folder))
+
+    # On linux, the libraries are installed to CMAKE_INSTALL_PREFIX/lib.
+    if sys.platform == "linux" or sys.platform == "linux2":
+        paths.append(os.path.join('${CMAKE_INSTALL_PREFIX}', 'lib'))
     paths.append("")
     framework_dir = os.environ.get('LIBFIVE_FRAMEWORK_DIR')
     if framework_dir:
